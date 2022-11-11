@@ -1,12 +1,15 @@
 package up.sm.debat;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Debat {
 	private Graph g ; 
+	private ArrayList <String> solutions; 
 	
 	public Debat() {
 		this.g = new Graph(); 
+		solutions = new <String> ArrayList(); 
 	}
 	
 	public void setG(int nbSommets) {
@@ -52,6 +55,27 @@ public class Debat {
 		
 		System.out.println("1) Ajouter une contradiction"); 
 		System.out.println("2) Fin"); 
+		
+	}
+	
+	public void ajouterArgument() {
+		System.out.println("Ajoutez un argument dans la solution : ");
+		
+		Scanner saisie = new Scanner(System.in); 
+		String argument = saisie.nextLine(); 
+		this.solutions.add(argument); 
+	}
+	
+	public void retirerArgument() {
+		System.out.println("Saisissez l'argument que vous souhaitez retirer : ");
+		Scanner saisie = new Scanner(System.in); 
+		String argument = saisie.nextLine(); 
+		solutions.remove(argument);
+	}
+	
+	public void verifierSolution() {
+		System.out.println("Voici la solution que vous avez rentré : "); 
+		System.out.println(this.solutions);
 		
 	}
 	
