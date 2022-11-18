@@ -1,0 +1,3 @@
+digraph debat {
+A1->A2;
+}

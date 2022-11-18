@@ -65,7 +65,7 @@ public class Graph {
 	 * @param s1 Sommet à la première extrémité de l'arête 
 	 * @param s2 Sommet à la deuxième extrémité de l'arête 
 	 */
-	public void ajouterArete(int s1, int s2) {
+	public void ajouterArete(int s1, int s2) throws ArrayIndexOutOfBoundsException {
 		matriceAdjacence[s1][s2]= 1; 
 	}
 	

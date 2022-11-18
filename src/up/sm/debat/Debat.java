@@ -10,6 +10,12 @@ import java.util.Scanner;
  * Author : Sami BOUFASSA & Moncef BOUHABEL 
  */
 
+/* 
+ * Créer une classe interface homme machinne (saisir argument, saisir contradictions, menus...) 
+ * Créer une classe solution et une classe graph 
+ * Créer une classe argument qui contient l'id de l'argument 
+ * 
+ */
 public class Debat {
 
 	private Graph g ; 
@@ -60,7 +66,13 @@ public class Debat {
 		Scanner saisie = new Scanner(System.in); 
 		String s1 = saisie.nextLine(); 
 		String s2 = saisie.nextLine(); 
-		this.g.ajouterArete(Character.getNumericValue(s1.charAt(1)) -1, Character.getNumericValue(s2.charAt(1))-1);
+		try {
+			this.g.ajouterArete(Character.getNumericValue(s1.charAt(1)) -1, Character.getNumericValue(s2.charAt(1))-1);
+		}
+		catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("Cet argument n'existe pas !"); 
+			System.out.println(e.getMessage()); 
+		}
 	}
 	
 	/**
@@ -119,42 +131,55 @@ public class Debat {
 	 * Permet de vérifier si les arguments saisis par l'utilisateur forment une solution admissible
 	 */
 	public void verifierSolution() {
-		if (solutions.size()==0 || solutions.size()==1) {
+		if (solutions.size()==0) {
 			System.out.println("Votre solution est admissible !"); 
-			return ; 
 		}
-		boolean contradiction = false; 
-		for (int i = 0; i<this.solutions.size() && contradiction == false; i++) {
-			for (int j = 0 ; j<g.getNbSommets(); j++) {
-				// Si on trouve un sommet du graphe qui contredit un élément de l'ensemble S
-				if (g.getMatriceAdjacence()[j][solutions.get(i)-1] == 1) {
-					// Si ce sommet est aussi dans l'ensemble S
-					if (solutions.contains(j+1)) {
-						contradiction = true; 
-						//System.out.println("Contradiction interne" + j); 
-					}
-						
-					else {
-						contradiction = true ; 
-						for (int k = 0; k<solutions.size(); k++)
-							// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence k 
-							if (g.getMatriceAdjacence()[solutions.get(k)-1][j] == 1)
-								contradiction = false; 
-						
+		if (solutions.size()==1) {
+			StringBuffer sb = new StringBuffer ("Votre solution est admissible !"); 
+			for (int i = 0; i<g.getNbSommets() && sb.charAt(sb.length()-1) == '!'; i++) {
+				if (g.getMatriceAdjacence()[i][solutions.get(0)-1] == 1) {
+					if (g.getMatriceAdjacence()[solutions.get(0)-1][i] !=1) {
+						sb.replace(0,sb.length(),"Votre solution n'est pas admissible"); 
 					}
 				}
 			}
+			System.out.println(sb); 
 		}
-		if (contradiction == false)
-			System.out.println("Votre solution est admissible ! "); 
-		else 
-			System.out.println("Votre solution n'est pas admissible ! "); 
+		else if (solutions.size()>1) {
+			boolean contradiction = false; 
+			for (int i = 0; i<this.solutions.size() && contradiction == false; i++) {
+				for (int j = 0 ; j<g.getNbSommets(); j++) {
+					// Si on trouve un sommet du graphe qui contredit un élément de l'ensemble S
+					if (g.getMatriceAdjacence()[j][solutions.get(i)-1] == 1) {
+						// Si ce sommet est aussi dans l'ensemble S
+						if (solutions.contains(j+1)) {
+							contradiction = true; 
+							//System.out.println("Contradiction interne" + j); 
+						}
+							
+						else {
+							contradiction = true ; 
+							for (int k = 0; k<solutions.size(); k++)
+								// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence k 
+								if (g.getMatriceAdjacence()[solutions.get(k)-1][j] == 1)
+									contradiction = false; 
+							
+						}
+					}
+				}
+			}
+			if (contradiction == false)
+				System.out.println("Votre solution est admissible ! "); 
+			else 
+				System.out.println("Votre solution n'est pas admissible ! "); 
+		}
+		
 		
 		afficherSolutions(); 
 	}
 	
 	/**
-	 * Permet d'afficher l'ensemble des solutions saisi par l'utilisateur
+	 * Permet d'afficher l'ensemble des solutions saisies par l'utilisateur
 	 */
 	public void afficherSolutions() {
 		System.out.println("Voici la solution que vous avez rentré : "); 
