@@ -2,6 +2,7 @@ package up.sm.debat;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Interface {
@@ -14,6 +15,32 @@ public class Interface {
 		listeArguments = new ArrayList <Argument>(); 
 	}
 	
+	public void saisirArgument() {
+		System.out.println("Saisissez les arguments :") ; 
+		for (int i = 0; i<d.getGraph().getNbSommets() ; i++) {
+			Scanner saisie = new Scanner (System.in); 
+			String s = saisie.nextLine(); 
+			Argument a = new Argument(s); 
+			listeArguments.add(a); 
+		}
+
+	}
+	
+	public void afficherDebat() {
+		StringBuffer sb = new StringBuffer(); 
+		sb.append("digraph debat {\n"); 
+		for (int i = 0; i<listeArguments.size(); i++) {
+			for (int j = 0 ; j<listeArguments.size(); j++) {
+				if (d.getGraph().getMatriceAdjacence()[i][j] == 1) {
+					sb.append(listeArguments.get(i).getNom()).append("->").append(listeArguments.get(j).getNom()).append(";"); 
+				}
+			}
+		}
+		sb.append("\n}"); 	
+		System.out.println(sb) ; 
+
+	}
+	
 	/**
 	 * Permet à l'utilisateur d'ajouter les contradictions / arêtes du graphe 
 	 */
@@ -22,14 +49,22 @@ public class Interface {
 		Scanner saisie = new Scanner(System.in); 
 		String s1 = saisie.nextLine(); 
 		String s2 = saisie.nextLine(); 
-		Argument a = new Argument ( s1);
-		Argument b = new Argument ( s2); 
-
-		listeArguments.add(a); 
-		listeArguments.add(b); 
-		
+		int id1 = -1 ;  
+		int id2 = -2 ; 
+		boolean trouve1 = false ; 
+		boolean trouve2= false; 
+		for (int i =0 ; i<listeArguments.size() && (trouve1 == false || trouve2==false); i++) {
+			if (listeArguments.get(i).getNom().equals(s1)) {
+				id1 = listeArguments.get(i).getId(); 
+				trouve1= true ; 
+			}
+			if (listeArguments.get(i).getNom().equals(s2)) {
+				id2 = listeArguments.get(i).getId(); 
+				trouve2 = true; 
+			}
+		}
 		try {
-			this.d.getGraph().ajouterArete(a.getId(), b.getId());
+			this.d.getGraph().ajouterArete(id1, id2);
 		}
 		catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e) {
 			System.out.println("Cet argument n'existe pas !"); 
@@ -43,10 +78,18 @@ public class Interface {
 	 */
 	public void saisirNbArguments() {
 		System.out.println("Saisissez le nombre d'arguments"); 
-		int x ; 
-		Scanner saisie = new Scanner(System.in); 
-		x= saisie.nextInt(); 
-		this.d.getGraph().setNbSommets(x);
+		int x = -1 ; 
+		do {
+			try {
+				Scanner saisie = new Scanner(System.in); 
+				x= saisie.nextInt(); 
+				this.d.getGraph().setNbSommets(x);
+			}
+			catch (InputMismatchException e) {
+				System.out.println("Veuillez entrer un nombre ! "); 
+			}
+		} while (x==-1); 
+		
 	}
 	
 	/**
@@ -109,75 +152,77 @@ public class Interface {
 		
 	}
 	
-	public void afficherDebat() {
-		try {
-			System.out.println(this.d.getGraph().afficherGraph()); 
-		}
-		catch (IOException e){
-			System.out.println("probleme affichage graphe"); 
-		}
-	}
+
 	
 	/**
 	 * Affiche le premier menu à l'utilisateur 
 	 */
-	public void menu1() {
-		int x ; 
-		Scanner saisie = new Scanner(System.in); 
+	public void menu1() throws InputMismatchException {
+		int x = -1; 
 		
-		do {
-			System.out.println("Que souhaitez vous faire ? "); 
-			System.out.println("1) Ajouter une contradiction"); 
-			System.out.println("2) Afficher le débat"); 
-			System.out.println("3) Fin"); 
-			
-			x = saisie.nextInt(); 
-			switch(x) {
-			case 1 : ajouterContradiction(); 
-				break ; 
-			case 2 : afficherDebat(); 
-				break ; 
-			case 3 : 
-				break ; 
-			default : System.out.println("Vous devez saisir 1,2 ou 3 !") ; 
-			}
-			
-		} while (x!=3); 
-		
-		
+			do {
+				try {
+					Scanner saisie = new Scanner(System.in); 
+					System.out.println("Que souhaitez vous faire ? "); 
+					System.out.println("1) Ajouter une contradiction"); 
+					System.out.println("2) Afficher le débat"); 
+					System.out.println("3) Fin"); 
+					
+					x = saisie.nextInt(); 
+					switch(x) {
+					case 1 : ajouterContradiction(); 
+						break ; 
+					case 2 : afficherDebat(); 
+						break ; 
+					case 3 : 
+						break ; 
+					default : System.out.println("Vous devez saisir 1,2 ou 3 !") ; 
+					}
+				}
+				catch (InputMismatchException e ) {
+					System.out.println("Veuillez entrer un nombre !"); 
+				}
+			} while (x!=3 || x==-1);
 	}
+		
+	
 	
 	/**
 	 * Permet d'afficher le menu2 
 	 */
-	public void menu2() {
+	public void menu2() throws InputMismatchException {
 		
-		int x ; 
-		Scanner saisie = new Scanner(System.in); 
-		
-		do {
-			System.out.println("1) Ajouter un argument"); 
-			System.out.println("2) Retirer un argument"); 
-			System.out.println("3) Verifier la solution"); 
-			System.out.println("4) Fin"); 
+		int x = -1; 
+			do {
+				try {
+					Scanner saisie = new Scanner(System.in); 
+
+					System.out.println("1) Ajouter un argument"); 
+					System.out.println("2) Retirer un argument"); 
+					System.out.println("3) Verifier la solution"); 
+					System.out.println("4) Fin"); 
+					
+					x = saisie.nextInt(); 
+					switch(x) {
+					case 1 : ajouterArgument(); 
+						break ; 
+					case 2 : retirerArgument(); 
+						break ; 
+					case 3 : d.verifierSolution() ;
+							afficherSolutions();  
+						break ; 
+					case 4 : d.verifierSolution(); 
+							afficherSolutions(); 
+						break ; 
+					default : System.out.println("Vous devez saisir 1, 2, 3 ou 4 !") ; 
+					}
+				}
+				
+				catch (InputMismatchException e) {
+					System.out.println("Veuillez entrer un nombre"); 
+				}
+			} while (x!=4 || x==-1); 
 			
-			x = saisie.nextInt(); 
-			switch(x) {
-			case 1 : ajouterArgument(); 
-				break ; 
-			case 2 : retirerArgument(); 
-				break ; 
-			case 3 : d.verifierSolution() ;
-					afficherSolutions();  
-				break ; 
-			case 4 : d.verifierSolution(); 
-					afficherSolutions(); 
-				break ; 
-			default : System.out.println("Vous devez saisir 1, 2, 3 ou 4 !") ; 
-			}
-			
-		} while (x!=4); 
-		
 	}
 	
 	
@@ -188,7 +233,9 @@ class TestInterface{
 	public static void main(String []args) {
 		Interface i = new Interface (); 
 		i.saisirNbArguments();
+		i.saisirArgument();
 		i.menu1(); 
-		i.menu2();
+		i.menu2(); 
+		
 	}
 }

@@ -5,9 +5,10 @@ public class Argument {
 	private String nom ; 
 	private static int cptArg = 0; 
 	
-	public Argument () {
+	public Argument (String s) {
 		this.id = cptArg ;
 		cptArg++; 
+		this.nom = s; 
 	}
 	
 	public void setNom(String s) {
