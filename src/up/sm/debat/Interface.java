@@ -8,11 +8,9 @@ import java.util.Scanner;
 public class Interface {
 	
 	private Debat d ; 
-	private ArrayList <Argument> listeArguments ; 
 	
 	public Interface () {
 		d = new Debat(); 
-		listeArguments = new ArrayList <Argument>(); 
 	}
 	
 	public void saisirArgument() {
@@ -21,7 +19,7 @@ public class Interface {
 			Scanner saisie = new Scanner (System.in); 
 			String s = saisie.nextLine(); 
 			Argument a = new Argument(s); 
-			listeArguments.add(a); 
+			d.addArgument(a); 
 		}
 
 	}
@@ -29,10 +27,10 @@ public class Interface {
 	public void afficherDebat() {
 		StringBuffer sb = new StringBuffer(); 
 		sb.append("digraph debat {\n"); 
-		for (int i = 0; i<listeArguments.size(); i++) {
-			for (int j = 0 ; j<listeArguments.size(); j++) {
+		for (int i = 0; i<d.getListeArguments().size(); i++) {
+			for (int j = 0 ; j<d.getListeArguments().size(); j++) {
 				if (d.getGraph().getMatriceAdjacence()[i][j] == 1) {
-					sb.append(listeArguments.get(i).getNom()).append("->").append(listeArguments.get(j).getNom()).append(";"); 
+					sb.append(d.getListeArguments().get(i).getNom()).append("->").append(d.getListeArguments().get(j).getNom()).append(";\n"); 
 				}
 			}
 		}
@@ -53,13 +51,13 @@ public class Interface {
 		int id2 = -2 ; 
 		boolean trouve1 = false ; 
 		boolean trouve2= false; 
-		for (int i =0 ; i<listeArguments.size() && (trouve1 == false || trouve2==false); i++) {
-			if (listeArguments.get(i).getNom().equals(s1)) {
-				id1 = listeArguments.get(i).getId(); 
+		for (int i =0 ; i<d.getListeArguments().size() && (trouve1 == false || trouve2==false); i++) {
+			if (d.getListeArguments().get(i).getNom().equals(s1)) {
+				id1 = d.getListeArguments().get(i).getId(); 
 				trouve1= true ; 
 			}
-			if (listeArguments.get(i).getNom().equals(s2)) {
-				id2 = listeArguments.get(i).getId(); 
+			if (d.getListeArguments().get(i).getNom().equals(s2)) {
+				id2 = d.getListeArguments().get(i).getId(); 
 				trouve2 = true; 
 			}
 		}
@@ -68,7 +66,7 @@ public class Interface {
 		}
 		catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e) {
 			System.out.println("Cet argument n'existe pas !"); 
-			System.out.println(e.getMessage()); 
+			//System.out.println(e.getMessage()); 
 		}
 	
 	}
@@ -95,15 +93,15 @@ public class Interface {
 	/**
 	 * Permet d'ajouter un argument dans l'ensemble des solutions 
 	 */
-	public void ajouterArgument() {
+	public void ajouterArgumentSolution() {
 		System.out.println("Ajoutez un argument dans la solution : ");
 		
 		Scanner saisie = new Scanner(System.in); 
 		String argument = saisie.nextLine(); 
 		boolean trouve = false; 
-		for (int i = 0; i<listeArguments.size() && trouve == false ; i++) {
-			if (listeArguments.get(i).getNom().equals(argument)) {
-				this.d.getSolutions().add(listeArguments.get(i).getId()); 
+		for (int i = 0; i<d.getListeArguments().size() && trouve == false ; i++) {
+			if (d.getListeArguments().get(i).getNom().equals(argument)) {
+				this.d.getSolutions().add(d.getListeArguments().get(i).getId()); 
 				trouve = true; 
 			}
 		}
@@ -121,9 +119,9 @@ public class Interface {
 		Scanner saisie = new Scanner(System.in); 
 		String argument = saisie.nextLine(); 
 		boolean trouve = false; 
-		for (int i = 0; i<listeArguments.size() && trouve == false ; i++) {
-			if (listeArguments.get(i).getNom().equals(argument)) {
-				this.d.getSolutions().remove(listeArguments.get(i).getId()); 
+		for (int i = 0; i<d.getListeArguments().size() && trouve == false ; i++) {
+			if (d.getNameFromId(d.getSolutions().get(i)).equals(argument)) {
+				this.d.getSolutions().remove(d.getSolutions().get(i)); 
 				trouve = true; 
 			}
 		}
@@ -138,14 +136,14 @@ public class Interface {
 	 * Permet d'afficher l'ensemble des solutions saisies par l'utilisateur
 	 */
 	public void afficherSolutions() {
-		System.out.println("Voici la solution que vous avez rentré : "); 
+		System.out.println("Voici la solution que vous avez rentrée : "); 
 		//System.out.println(this.solutions);
 		StringBuffer sb = new StringBuffer("{");
 		for (int i = 0; i<this.d.getSolutions().size();i++) {
 			if (i==this.d.getSolutions().size()-1)
-				sb.append(listeArguments.get(i).getNom()); 
+				sb.append(d.getNameFromId(d.getSolutions().get(i))); 
 			else 
-				sb.append(listeArguments.get(i).getNom()).append(","); 
+				sb.append(d.getNameFromId(d.getSolutions().get(i))).append(","); 
 		}
 		sb.append("}") ; 
 		System.out.println(sb); 
@@ -204,7 +202,7 @@ public class Interface {
 					
 					x = saisie.nextInt(); 
 					switch(x) {
-					case 1 : ajouterArgument(); 
+					case 1 : ajouterArgumentSolution(); 
 						break ; 
 					case 2 : retirerArgument(); 
 						break ; 
