@@ -1,6 +1,8 @@
 package up.sm.debat;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -8,11 +10,16 @@ import java.util.Scanner;
 public class Interface {
 	
 	private Debat d ; 
+	 
 	
 	public Interface () {
 		d = new Debat(); 
 	}
 	
+	public Interface (String s) {
+		d = new Debat(s); 
+		d.initGraphFile();
+	}
 	public void saisirArgument() {
 		System.out.println("Saisissez les arguments :") ; 
 		for (int i = 0; i<d.getGraph().getNbSommets() ; i++) {
@@ -47,20 +54,9 @@ public class Interface {
 		Scanner saisie = new Scanner(System.in); 
 		String s1 = saisie.nextLine(); 
 		String s2 = saisie.nextLine(); 
-		int id1 = -1 ;  
-		int id2 = -2 ; 
-		boolean trouve1 = false ; 
-		boolean trouve2= false; 
-		for (int i =0 ; i<d.getListeArguments().size() && (trouve1 == false || trouve2==false); i++) {
-			if (d.getListeArguments().get(i).getNom().equals(s1)) {
-				id1 = d.getListeArguments().get(i).getId(); 
-				trouve1= true ; 
-			}
-			if (d.getListeArguments().get(i).getNom().equals(s2)) {
-				id2 = d.getListeArguments().get(i).getId(); 
-				trouve2 = true; 
-			}
-		}
+		int id1 = d.getIdFromName(s1) ;  
+		int id2 = d.getIdFromName(s2) ; 
+		
 		try {
 			this.d.getGraph().ajouterArete(id1, id2);
 		}
@@ -91,59 +87,54 @@ public class Interface {
 	}
 	
 	/**
-	 * Permet d'ajouter un argument dans l'ensemble des solutions 
+	 * Permet d'ajouter un argument dans l'ensemble des solution 
 	 */
 	public void ajouterArgumentSolution() {
 		System.out.println("Ajoutez un argument dans la solution : ");
 		
 		Scanner saisie = new Scanner(System.in); 
 		String argument = saisie.nextLine(); 
-		boolean trouve = false; 
-		for (int i = 0; i<d.getListeArguments().size() && trouve == false ; i++) {
-			if (d.getListeArguments().get(i).getNom().equals(argument)) {
-				this.d.getSolutions().add(d.getListeArguments().get(i).getId()); 
-				trouve = true; 
-			}
-		}
-		if (trouve == false)
+		if ( d.getsolution().contains(d.getIdFromName(argument))) 
+			System.out.println("Cet argument est déjà dans la solution !"); 
+		else 
+			this.d.getsolution().add(d.getIdFromName(argument)); 
+
+		
+		if (d.getIdFromName(argument) == -1)
 			System.out.println("Cet argument n'existe pas !"); 
 		else 
-			afficherSolutions() ; 
+			affichersolution() ; 
 	}
 	
 	/**
-	 * Permet de retirer un argument de l'ensemble des solutions 
+	 * Permet de retirer un argument de l'ensemble des solution 
 	 */
 	public void retirerArgument() {
 		System.out.println("Saisissez l'argument que vous souhaitez retirer : ");
 		Scanner saisie = new Scanner(System.in); 
 		String argument = saisie.nextLine(); 
-		boolean trouve = false; 
-		for (int i = 0; i<d.getListeArguments().size() && trouve == false ; i++) {
-			if (d.getNameFromId(d.getSolutions().get(i)).equals(argument)) {
-				this.d.getSolutions().remove(d.getSolutions().get(i)); 
-				trouve = true; 
-			}
-		}
-		if (trouve == false)
+		this.d.getsolution().remove(d.getIdFromName(argument)); 
+		
+	
+		if (d.getIdFromName(argument) == -1)
 			System.out.println("Cet argument n'existe pas !"); 
 		else 
-			afficherSolutions() ; 
+			affichersolution() ; 
 
 	}
 	
 	/**
-	 * Permet d'afficher l'ensemble des solutions saisies par l'utilisateur
+	 * Permet d'afficher l'ensemble des solution saisies par l'utilisateur
 	 */
-	public void afficherSolutions() {
+	public void affichersolution() {
 		System.out.println("Voici la solution que vous avez rentrée : "); 
-		//System.out.println(this.solutions);
+		//System.out.println(this.solution);
 		StringBuffer sb = new StringBuffer("{");
-		for (int i = 0; i<this.d.getSolutions().size();i++) {
-			if (i==this.d.getSolutions().size()-1)
-				sb.append(d.getNameFromId(d.getSolutions().get(i))); 
+		for (int i = 0; i<this.d.getsolution().size();i++) {
+			if (i==this.d.getsolution().size()-1)
+				sb.append(d.getNameFromId(d.getsolution().get(i))); 
 			else 
-				sb.append(d.getNameFromId(d.getSolutions().get(i))).append(","); 
+				sb.append(d.getNameFromId(d.getsolution().get(i))).append(","); 
 		}
 		sb.append("}") ; 
 		System.out.println(sb); 
@@ -206,11 +197,11 @@ public class Interface {
 						break ; 
 					case 2 : retirerArgument(); 
 						break ; 
-					case 3 : d.verifierSolution() ;
-							afficherSolutions();  
+					case 3 : d.testerContradiction() ;
+							affichersolution();  
 						break ; 
-					case 4 : d.verifierSolution(); 
-							afficherSolutions(); 
+					case 4 : d.testerContradiction(); 
+							affichersolution(); 
 						break ; 
 					default : System.out.println("Vous devez saisir 1, 2, 3 ou 4 !") ; 
 					}
@@ -229,11 +220,20 @@ public class Interface {
 
 class TestInterface{
 	public static void main(String []args) {
-		Interface i = new Interface (); 
-		i.saisirNbArguments();
-		i.saisirArgument();
-		i.menu1(); 
-		i.menu2(); 
+		
+		if (args.length==0) {
+			Interface i = new Interface (); 
+			i.saisirNbArguments();
+			i.saisirArgument();
+			i.menu1(); 
+			i.menu2(); 
+		}
+		else {
+			Interface i = new Interface (args[0]); 
+			//i.menu1();
+			i.menu2();
+			
+		}
 		
 	}
 }

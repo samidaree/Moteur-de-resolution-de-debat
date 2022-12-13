@@ -3,7 +3,7 @@ package up.sm.debat;
 public class Argument {
 	private final int id ; 
 	private String nom ; 
-	private static int cptArg = 0; 
+	protected static int cptArg = 0; 
 	
 	public Argument (String s) {
 		this.id = cptArg ;
