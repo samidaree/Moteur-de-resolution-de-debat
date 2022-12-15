@@ -40,7 +40,54 @@ public class Debat {
 	}
 	
 	public void addArgument(Argument a) {
-		this.listeArguments.add(a); 
+			this.listeArguments.add(a); 
+		
+	}
+	
+	public void supprimerEspace() {
+		for (int i = 0 ; i<listeArguments.size(); i++) {
+			if (this.listeArguments.get(i).getNom().contains(" "))
+				this.listeArguments.get(i).setNom(listeArguments.get(i).getNom().replace(" ", "")); 
+		}
+	}
+	
+	public boolean contientArgumentVide() {
+		for (int i  = 0;  i<listeArguments.size() ; i++) {
+				if (listeArguments.get(i).getNom().isEmpty()) {
+					System.out.println("Vous ne pouvez pas saisir d'argument vide !  ");
+					listeArguments.get(i).setCptArg(0); 
+					listeArguments.clear();
+					
+					return true ; 
+				}
+			}
+		return false; 
+	}
+	public boolean contientDoublon() {
+		for (int i  = 0;  i<listeArguments.size() ; i++) {
+			for (int j = i+1 ; j<listeArguments.size(); j++) {
+				if (listeArguments.get(i).getNom().equals(listeArguments.get(j).getNom()) && i!=j) {
+					System.out.println("Vous ne pouvez pas saisir 2 mêmes arguments ! ");
+					listeArguments.get(i).setCptArg(0); 
+					listeArguments.clear();
+					
+					return true ; 
+				}
+			}
+		}
+		return false; 
+	}
+	
+	public void afficherListeArguments() {
+		for (Argument a : listeArguments ) {
+			System.out.println(a.getNom()); 
+		}
+	}
+	
+	public void afficherListeSolution(ArrayList <Integer> liste) {
+		for (Integer i : liste) {
+			System.out.println(getNameFromId(i)); 
+		}
 	}
 	
 	public int getIdFromName(String s) {
@@ -95,17 +142,17 @@ public class Debat {
 	/**
 	 * Permet de vérifier si les arguments saisis par l'utilisateur forment une solution admissible
 	 */
-	public boolean testerContradiction() {
+	public boolean estPasAdmissible(ArrayList <Integer> sol) {
 		boolean contradiction = false; 
-		if (solution.size()==0) {
+		if (sol.size()==0) {
 			System.out.println("Votre solution est admissible !"); 
 		}
-		if (solution.size()==1) {
+		if (sol.size()==1) {
 			StringBuffer sb = new StringBuffer ("Votre solution est admissible !"); 
 			StringBuffer sb2 = new StringBuffer (); 
 			for (int i = 0; i<g.getNbSommets() && sb.charAt(sb.length()-1) == '!'; i++) {
-				if (g.getMatriceAdjacence()[i][solution.get(0)] == 1) {
-					if (g.getMatriceAdjacence()[solution.get(0)][i] !=1) {
+				if (g.getMatriceAdjacence()[i][sol.get(0)] == 1) {
+					if (g.getMatriceAdjacence()[sol.get(0)][i] !=1) {
 						contradiction  =true; 
 						sb.replace(0,sb.length(),"Votre solution n'est pas admissible"); 
 						sb2.replace(0,sb.length(), getNameFromId(i) + " Contredit " + getNameFromId(solution.get(0)) + " et " + getNameFromId(solution.get(0)) + " ne se défend pas lui même" );
@@ -115,24 +162,24 @@ public class Debat {
 			System.out.println(sb2); 
 			System.out.println(sb); 
 		}
-		else if (solution.size()>1) {
+		else if (sol.size()>1) {
 			contradiction = false; 
-			for (int i = 0; i<this.solution.size() && contradiction == false; i++) {
+			for (int i = 0; i<sol.size() && contradiction == false; i++) {
 				for (int j = 0 ; j<g.getNbSommets(); j++) {
 					// Si on trouve un sommet du graphe qui contredit un élément de l'ensemble S
-					if (g.getMatriceAdjacence()[j][solution.get(i)] == 1) {
+					if (g.getMatriceAdjacence()[j][sol.get(i)] == 1) {
 						// Si ce sommet est aussi dans l'ensemble S
-						if (solution.contains(j)&& solution.contains(i)) {
+						if (sol.contains(j)&& sol.contains(i)) {
 							contradiction = true; 
-							System.out.println("Contradiction interne : "+  getNameFromId(solution.get(i))+" et " + getNameFromId(j) + " se contredisent."); 
+							System.out.println("Contradiction interne : "+  getNameFromId(sol.get(i))+" et " + getNameFromId(j) + " se contredisent."); 
 						}
 							
 						else {
 							contradiction = true ; 
-							StringBuffer sb = new StringBuffer (getNameFromId(j) + " contredit " + getNameFromId(solution.get(i)) + " et " + getNameFromId(solution.get(i))+ " ne se défend pas."); 
-							for (int k = 0; k<solution.size(); k++)
+							StringBuffer sb = new StringBuffer (getNameFromId(j) + " contredit " + getNameFromId(sol.get(i)) + " et " + getNameFromId(sol.get(i))+ " ne se défend pas."); 
+							for (int k = 0; k<sol.size(); k++)
 								// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence j 
-								if (g.getMatriceAdjacence()[solution.get(k)][j] == 1) {
+								if (g.getMatriceAdjacence()[sol.get(k)][j] == 1) {
 									contradiction = false; 
 									sb.replace(0, sb.length(), "") ;
 
@@ -152,6 +199,55 @@ public class Debat {
 		
 	}
 	
+	/**
+	 * Permet aussi de verifier l'admissibilité mais sans les affichages en sortie standard
+	 * @param sol
+	 * @return
+	 */
+	public boolean estPasAdmissible2(ArrayList <Integer> sol) {
+		boolean contradiction = false; 
+		
+		if (sol.size()==1) {
+	
+			for (int i = 0; i<g.getNbSommets(); i++) {
+				if (g.getMatriceAdjacence()[i][sol.get(0)] == 1) {
+					if (g.getMatriceAdjacence()[sol.get(0)][i] !=1) {
+						contradiction  =true; 
+						
+					}
+				}
+			}
+ 
+		}
+		else if (sol.size()>1) {
+			contradiction = false; 
+			for (int i = 0; i<sol.size() && contradiction == false; i++) {
+				for (int j = 0 ; j<g.getNbSommets(); j++) {
+					// Si on trouve un sommet du graphe qui contredit un élément de l'ensemble S
+					if (g.getMatriceAdjacence()[j][sol.get(i)] == 1) {
+						// Si ce sommet est aussi dans l'ensemble S
+						if (sol.contains(j)&& sol.contains(i)) {
+							contradiction = true; 
+						}
+							
+						else {
+							contradiction = true ; 
+							for (int k = 0; k<sol.size(); k++)
+								// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence j 
+								if (g.getMatriceAdjacence()[sol.get(k)][j] == 1) {
+									contradiction = false; 
+
+								}
+						}
+					}
+				}
+			}
+	
+		}
+		
+		return contradiction ; 
+		
+	}
 
 	public void initGraphFile() {
 		//System.out.println(p); 
@@ -197,15 +293,42 @@ public class Debat {
 	}
 	
 	
-	/*public void chercherSolutionAdmissible() {
-		for (int i = 0 ; i<listeArguments.size(); i++) {
-			for (int j = i ; j<listeArguments.size(); j++) {
-				solution.add(listeArguments.get(i).getId()); 
-				if (testerContradiction())
-					solution.remove(listeArguments.get(i).getId()); 
-			}
-				solution.add(listeArguments.get(i).getId()); 
+	public boolean verifPref(ArrayList <Integer> sol) {
+		
+		if (estPasAdmissible2(sol)==true) {
+			System.out.println("Votre solution n'est ni admissible ni préférée"); 
+			return false; 
 		}
-	} */
+		ArrayList <Integer> temp = new ArrayList(); 
+		temp.addAll(sol); 
+		for (int i = 0 ; i<listeArguments.size(); i++) {
+			if (!sol.contains(listeArguments.get(i).getId())) {
+				temp.add(listeArguments.get(i).getId()); 
+				// Un ensemble de solution plus grand est admissible 
+				if (estPasAdmissible2(temp) == false)  {
+					afficherListeSolution(temp); 
+					System.out.println("La solution n'est pas préférée"); 
 
+					return false ; 
+				}
+				for (int j= i+1 ; j<listeArguments.size(); j++) {
+					if (!sol.contains(listeArguments.get(j).getId())) {
+						temp.add(listeArguments.get(j).getId()); 
+						// Un ensemble de solution plus grand est admissible 
+						if (estPasAdmissible2(temp) == false) {
+							afficherListeSolution(temp); 
+							System.out.println("La solution n'est pas préférée"); 
+							return false ; 
+						}
+						
+					}
+				temp.clear(); 
+				temp.addAll(sol); 
+				}
+			}
+		}
+		System.out.println("La solution est préférée");
+		return true; 
+
+	}
 }

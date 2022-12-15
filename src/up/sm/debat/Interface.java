@@ -21,13 +21,21 @@ public class Interface {
 		d.initGraphFile();
 	}
 	public void saisirArgument() {
-		System.out.println("Saisissez les arguments :") ; 
-		for (int i = 0; i<d.getGraph().getNbSommets() ; i++) {
-			Scanner saisie = new Scanner (System.in); 
-			String s = saisie.nextLine(); 
-			Argument a = new Argument(s); 
-			d.addArgument(a); 
-		}
+		
+		do {
+			System.out.println("Saisissez les arguments :") ; 
+
+			for (int i = 0; i<d.getGraph().getNbSommets() ; i++) {
+				
+				Scanner saisie = new Scanner (System.in); 
+				String s = saisie.nextLine(); 
+				 Argument a = new Argument(s); 
+				 d.addArgument(a);
+				 d.supprimerEspace();
+			}
+		} while (d.contientDoublon() == true || d.contientArgumentVide() == true) ; 
+	
+	
 
 	}
 	
@@ -56,13 +64,12 @@ public class Interface {
 		String s2 = saisie.nextLine(); 
 		int id1 = d.getIdFromName(s1) ;  
 		int id2 = d.getIdFromName(s2) ; 
-		
 		try {
 			this.d.getGraph().ajouterArete(id1, id2);
 		}
 		catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e) {
 			System.out.println("Cet argument n'existe pas !"); 
-			//System.out.println(e.getMessage()); 
+			System.out.println(e.getMessage()); 
 		}
 	
 	}
@@ -154,16 +161,19 @@ public class Interface {
 					Scanner saisie = new Scanner(System.in); 
 					System.out.println("Que souhaitez vous faire ? "); 
 					System.out.println("1) Ajouter une contradiction"); 
-					System.out.println("2) Afficher le débat"); 
-					System.out.println("3) Fin"); 
+					System.out.println("2) Afficher tous les arguments"); 
+					System.out.println("3) Afficher le débat"); 
+					System.out.println("4) Fin"); 
 					
 					x = saisie.nextInt(); 
 					switch(x) {
 					case 1 : ajouterContradiction(); 
 						break ; 
-					case 2 : afficherDebat(); 
-						break ; 
-					case 3 : 
+					case 2 : d.afficherListeArguments(); 
+					break ; 
+					case 3 : afficherDebat(); 
+					break ; 
+					case 4 : 
 						break ; 
 					default : System.out.println("Vous devez saisir 1,2 ou 3 !") ; 
 					}
@@ -171,7 +181,7 @@ public class Interface {
 				catch (InputMismatchException e ) {
 					System.out.println("Veuillez entrer un nombre !"); 
 				}
-			} while (x!=3 || x==-1);
+			} while (x!=4 || x==-1);
 	}
 		
 	
@@ -188,8 +198,9 @@ public class Interface {
 
 					System.out.println("1) Ajouter un argument"); 
 					System.out.println("2) Retirer un argument"); 
-					System.out.println("3) Verifier la solution"); 
-					System.out.println("4) Fin"); 
+					System.out.println("3) Verifier si la solution est admissible"); 
+					System.out.println("4) Verifier si la solution est préférée"); 
+					System.out.println("5) Fin"); 
 					
 					x = saisie.nextInt(); 
 					switch(x) {
@@ -197,10 +208,13 @@ public class Interface {
 						break ; 
 					case 2 : retirerArgument(); 
 						break ; 
-					case 3 : d.testerContradiction() ;
+					case 3 : d.estPasAdmissible(d.getsolution()) ;
 							affichersolution();  
 						break ; 
-					case 4 : d.testerContradiction(); 
+					case 4 : d.verifPref(d.getsolution()); 
+							affichersolution(); 
+							break ; 
+					case 5 : d.estPasAdmissible(d.getsolution()); 
 							affichersolution(); 
 						break ; 
 					default : System.out.println("Vous devez saisir 1, 2, 3 ou 4 !") ; 
@@ -210,7 +224,7 @@ public class Interface {
 				catch (InputMismatchException e) {
 					System.out.println("Veuillez entrer un nombre"); 
 				}
-			} while (x!=4 || x==-1); 
+			} while (x!=5 || x==-1); 
 			
 	}
 	

@@ -1,7 +1,7 @@
 package up.sm.debat;
 
 public class Argument {
-	private final int id ; 
+	private int id ; 
 	private String nom ; 
 	protected static int cptArg = 0; 
 	
@@ -13,6 +13,10 @@ public class Argument {
 	
 	public void setNom(String s) {
 		nom = s; 
+	}
+	
+	public void setCptArg(int cpt){
+		cptArg = cpt; 
 	}
 	
 	public int getId() {
