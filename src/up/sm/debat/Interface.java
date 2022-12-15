@@ -120,13 +120,15 @@ public class Interface {
 		System.out.println("Saisissez l'argument que vous souhaitez retirer : ");
 		Scanner saisie = new Scanner(System.in); 
 		String argument = saisie.nextLine(); 
-		this.d.getsolution().remove(d.getIdFromName(argument)); 
-		
+		try {
+			this.d.getsolution().remove(d.getsolution().indexOf(d.getIdFromName(argument))); 
+
+		}
+		catch (IndexOutOfBoundsException e) {
+			System.out.println("Cet argument existe pas !") ; 
+		}
 	
-		if (d.getIdFromName(argument) == -1)
-			System.out.println("Cet argument n'existe pas !"); 
-		else 
-			affichersolution() ; 
+		affichersolution() ; 
 
 	}
 	
@@ -200,7 +202,8 @@ public class Interface {
 					System.out.println("2) Retirer un argument"); 
 					System.out.println("3) Verifier si la solution est admissible"); 
 					System.out.println("4) Verifier si la solution est préférée"); 
-					System.out.println("5) Fin"); 
+					System.out.println("5) Afficher toutes les solutions admissibles"); 
+					System.out.println("6) Fin"); 
 					
 					x = saisie.nextInt(); 
 					switch(x) {
@@ -214,7 +217,13 @@ public class Interface {
 					case 4 : d.verifPref(d.getsolution()); 
 							affichersolution(); 
 							break ; 
-					case 5 : d.estPasAdmissible(d.getsolution()); 
+					case 5 : 
+						for (int i =1; i<=d.getGraph().getNbSommets(); i++) 
+							d.afficheCombinaisons(i); 
+					
+							d.afficheAllSolutions(); 
+						break ; 
+					case 6 : d.estPasAdmissible(d.getsolution()); 
 							affichersolution(); 
 						break ; 
 					default : System.out.println("Vous devez saisir 1, 2, 3 ou 4 !") ; 
@@ -224,7 +233,7 @@ public class Interface {
 				catch (InputMismatchException e) {
 					System.out.println("Veuillez entrer un nombre"); 
 				}
-			} while (x!=5 || x==-1); 
+			} while (x!=6 || x==-1); 
 			
 	}
 	

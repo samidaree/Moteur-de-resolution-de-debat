@@ -19,7 +19,8 @@ public class Debat {
 
 	private Graph g ; 
 	private ArrayList <Integer> solution; 
-	private ArrayList <ArrayList<Integer>> listeSolutions ; 
+	private ArrayList <ArrayList<Integer>> allSolutions ; 
+	
 	private ArrayList <Argument> listeArguments; 
 	private Path p ; 
 	/**
@@ -29,6 +30,7 @@ public class Debat {
 		this.g = new Graph(); 
 		solution = new <Integer> ArrayList(); 
 		listeArguments = new ArrayList <Argument>(); 
+		allSolutions = new ArrayList (); 
 	}
 	
 	public Debat(String s) {
@@ -169,9 +171,10 @@ public class Debat {
 					// Si on trouve un sommet du graphe qui contredit un élément de l'ensemble S
 					if (g.getMatriceAdjacence()[j][sol.get(i)] == 1) {
 						// Si ce sommet est aussi dans l'ensemble S
-						if (sol.contains(j)&& sol.contains(i)) {
+						if (sol.contains(j)) {
 							contradiction = true; 
 							System.out.println("Contradiction interne : "+  getNameFromId(sol.get(i))+" et " + getNameFromId(j) + " se contredisent."); 
+							return contradiction ; 
 						}
 							
 						else {
@@ -180,6 +183,7 @@ public class Debat {
 							for (int k = 0; k<sol.size(); k++)
 								// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence j 
 								if (g.getMatriceAdjacence()[sol.get(k)][j] == 1) {
+									System.out.println("test"); 
 									contradiction = false; 
 									sb.replace(0, sb.length(), "") ;
 
@@ -226,7 +230,7 @@ public class Debat {
 					// Si on trouve un sommet du graphe qui contredit un élément de l'ensemble S
 					if (g.getMatriceAdjacence()[j][sol.get(i)] == 1) {
 						// Si ce sommet est aussi dans l'ensemble S
-						if (sol.contains(j)&& sol.contains(i)) {
+						if (sol.contains(j)) {
 							contradiction = true; 
 						}
 							
@@ -292,6 +296,61 @@ public class Debat {
 		}
 	}
 	
+	
+	public void combinaison(int [] tab, int n, int r, int indice, int [] temp, int i) {
+		ArrayList <Integer> temp2 = new ArrayList (); 
+		if (indice == r) {
+			for (int j = 0 ;j<r ; j++) {
+				//System.out.println(temp[j] + " "); 
+				temp2.add(temp[j]); 
+			}
+			if (estPasAdmissible2(temp2) == false)
+				this.allSolutions.add(temp2); 
+			//temp2.clear();
+			return ; 
+		}
+		
+		 
+		
+		if (i>=n )
+			return ; 
+		
+		temp[indice] = tab[i];
+		combinaison(tab, n,r,indice +1, temp, i+1); 
+		
+		combinaison (tab, n, r, indice, temp, i+1); 
+			
+	}
+	
+	
+	
+	public void afficheCombinaisons(int r) {
+		int []temp = new int [r];  
+		int tab[] = new int[this.listeArguments.size()]; 
+		
+		for (int i =0 ; i<tab.length; i++) 
+			tab[i]= i; 
+		
+		combinaison(tab,tab.length, r, 0,temp, 0);
+		
+	}
+	
+	public void afficheAllSolutions() {
+		System.out.println("∅"); 
+		StringBuffer sb = new StringBuffer(); 
+		for (int i = 0; i<allSolutions.size();i++) {
+			for (int j = 0; j<allSolutions.get(i).size();j++ ) {
+				if (j!=allSolutions.get(i).size()-1)
+					sb.append(getNameFromId(allSolutions.get(i).get(j))).append(", ");
+				else 
+					sb.append(getNameFromId(allSolutions.get(i).get(j)));
+
+			}
+			System.out.println(sb + "\n");
+			sb.replace(0, sb.length()+1, ""); 
+		}
+		//System.out.println(allSolutions); 
+	}
 	
 	public boolean verifPref(ArrayList <Integer> sol) {
 		
