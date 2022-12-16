@@ -69,32 +69,5 @@ public class Graph {
 		matriceAdjacence[s1][s2]= 1; 
 	}
 	
-	/** 
-	 * Affiche le graphe 
-	 * @throws IOException 
-	 */
-	public String afficherGraph() throws IOException {
-		StringBuffer sb = new StringBuffer ("digraph debat {\n"); 
-		for (int i=0; i<nbSommets;i++) {
-			for (int j= 0; j<nbSommets; j++)
-				if(matriceAdjacence[i][j]==1) {
-					sb.append("A").append(i+1).append("->").append("A").append(j+1).append(";\n"); 
-				}
-		}
-		sb.append("}"); 
-		
-		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter("graph.txt")); 
-			bw.write(sb.toString());
-			bw.close(); 
-			
-	
-		}
-		
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	
-		return sb.toString(); 
-	}
+
 }

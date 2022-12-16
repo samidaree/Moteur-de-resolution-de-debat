@@ -1,5 +1,8 @@
 package up.sm.debat;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +21,10 @@ public class Interface {
 
 	public Interface (String s) {
 		d = new Debat(s);
-		d.initGraphFile();
+	}
+
+	public Debat getD(){
+		return d;
 	}
 	public void saisirArgument() {
 
@@ -50,8 +56,16 @@ public class Interface {
 			}
 		}
 		sb.append("\n}");
-		System.out.println(sb) ;
 
+		System.out.println(sb) ;
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter("graph.dot"));
+			bw.write(sb.toString());
+			bw.close();
+		}
+		catch (IOException e){
+			System.out.println("fichier invalide");
+		}
 	}
 
 	/**
@@ -174,6 +188,7 @@ public class Interface {
 					case 2 : d.afficherListeArguments();
 						break ;
 					case 3 : afficherDebat();
+						d.genererImage();
 						break ;
 					case 4 :
 						break ;
@@ -269,7 +284,7 @@ public class Interface {
 				if (d.getSolutionsPreferees().isEmpty())
 					d.setSolutionsPreferees();
 				Scanner saisie = new Scanner(System.in);
-				System.out.println("\n0) Afficher le débat");
+				System.out.println("\n0) Générer une image du graphe représentant le débat");
 				System.out.println("1) Chercher une solution admissible");
 				System.out.println("2) Chercher une solution préférée");
 				System.out.println("3) Sauvegarder la solution");
@@ -280,6 +295,7 @@ public class Interface {
 				x = saisie.nextInt();
 				switch(x) {
 					case 0 : afficherDebat();
+						d.genererImage();
 					break ;
 					case 1:
 						d.chercherSolutionAdmissible();
@@ -326,8 +342,8 @@ class TestInterface{
 		}
 		else {
 			Interface i = new Interface (args[0]);
-			//i.menu1();
-			i.menu3();
+			if (i.getD().initGraphFile() == 1)
+				i.menu3();
 
 		}
 

@@ -264,44 +264,66 @@ public class Debat {
 
 	}
 
-	public void initGraphFile() {
+	public boolean nomArgumentExisteDeja(String nom){
+		for (Argument a : listeArguments)
+			if (nom.equals(a.getNom()))
+				return true ;
+		return false;
+	}
+
+	public int initGraphFile() {
 		//System.out.println(p);
 		try {
 			BufferedReader br = Files.newBufferedReader(p);
 			String s;
 			while ((s = br.readLine()) != null) {
 				System.out.println(s);
-				if (s.substring(0, 8).equalsIgnoreCase("argument")) {
-					String nom = s.substring(s.indexOf('(') + 1, s.indexOf(')'));
-					nom = nom.replace(" ", "");
-					Argument a = new Argument(nom);
-					addArgument(a);
-				}
-				else if (s.substring(0, 13).equals("contradiction")) {
-					String firstArg = s.substring(s.indexOf('(') + 1, s.indexOf(','));
-					firstArg = firstArg.replace(" ", "");
-					String secondArg = s.substring(s.indexOf(',') + 1, s.indexOf(')'));
-					secondArg = secondArg.replace(" ", "");
-					try {
-						if (g.getMatriceAdjacence()==null)
-							g.setNbSommets(Argument.cptArg);
-						g.ajouterArete(getIdFromName(firstArg), getIdFromName(secondArg));
-					} catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e) {
-						System.out.println("L'un des 2 arguments ou les 2 arguments " + firstArg + " , " + secondArg + " n'existe(nt) pas");
-						System.out.println("Votre fichier est mal formé : tous les arguments doivent être définis avant leur utilisation dans une contradiction !");
-					} catch (NullPointerException e) {
-						System.out.println("Votre fichier est mal formé : tous les arguments doivent être définis avant leur utilisation dans une contradiction !");
+				if (s.length()>=8 ) {
+					if (s.substring(0, 8).equalsIgnoreCase("argument")) {
+						String nom = s.substring(s.indexOf('(') + 1, s.indexOf(')'));
+						nom = nom.replace(" ", "");
+						if (nom.isEmpty()) {
+							System.out.println("Vous ne pouvez pas mettre d'argument vide ! ");
+							return -1;
+						}
+						if (nomArgumentExisteDeja(nom)) {
+							System.out.println("Vous ne pouvez pas mettre 2 arguments avec le même nom");
+							return -1;
+						}
+						Argument a = new Argument(nom);
+						addArgument(a);
+					} else if (s.substring(0, 13).equals("contradiction")) {
+						String firstArg = s.substring(s.indexOf('(') + 1, s.indexOf(','));
+						firstArg = firstArg.replace(" ", "");
+						String secondArg = s.substring(s.indexOf(',') + 1, s.indexOf(')'));
+						secondArg = secondArg.replace(" ", "");
+						try {
+							if (g.getMatriceAdjacence() == null)
+								g.setNbSommets(Argument.cptArg);
+							g.ajouterArete(getIdFromName(firstArg), getIdFromName(secondArg));
+						} catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e) {
+							System.out.println("L'un des 2 arguments ou les 2 arguments " + firstArg + " , " + secondArg + " n'existe(nt) pas");
+							System.out.println("Votre fichier est mal formé : tous les arguments doivent être définis avant leur utilisation dans une contradiction !");
+							return -1  ;
+						} catch (NullPointerException e) {
+							System.out.println("Votre fichier est mal formé : tous les arguments doivent être définis avant leur utilisation dans une contradiction !");
+							return -1 ;
+						}
+					} else {
+						System.out.println("Votre fichier est mal formé : il ne doit contenir que des arguments et des contradictions ");
+						return -1;
 					}
 				}
 				else {
 					System.out.println("Votre fichier est mal formé : il ne doit contenir que des arguments et des contradictions ");
-					System.exit(0);
+					return -1;
 				}
 			}
 			br.close();
 		} catch (IOException e) {
 			System.out.println("Fichier invalide");
 		}
+		return 1;
 	}
 
 
@@ -468,6 +490,32 @@ public class Debat {
 			System.out.println("Fichier invalide");
 		}
 	}
+
+	public void genererImage() {
+		String chemin ;
+		do {
+			System.out.println("Saisissez le chemin de l'image à générer (l'extension doit être png, jpg ou pdf)") ;
+			Scanner saisie = new Scanner (System.in);
+			chemin = saisie.nextLine();
+		} while ((chemin.indexOf("png", chemin.length()-4)==-1 && chemin.indexOf("jpg", chemin.length()-4) == -1) && chemin.indexOf("pdf", chemin.length()-4) == -1);
+
+		try {
+
+			StringBuilder commande = new StringBuilder();
+			commande.append("dot -Tpng ").
+					append("graph").append(".dot ").
+					append("-o ").append(chemin);
+
+			executerCommande(commande.toString());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void executerCommande(String commande) throws Exception {
+		Process process = Runtime.getRuntime().exec(commande);
+	}
+
 }
 
 
