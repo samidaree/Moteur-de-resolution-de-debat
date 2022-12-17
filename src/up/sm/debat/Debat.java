@@ -340,7 +340,9 @@ public class Debat {
 
 
 	/**
-	 * Permet de vérifier si les arguments saisis par l'utilisateur forment une solution admissible
+	 * Permet de vérifier si un ensemble d'argument forme une solution admissible
+	 * @param sol solution potentiellement admissible
+	 * @return  true si la solution n'est pas admissible, false si la solution sol est admissible
 	 */
 	public boolean estPasAdmissible(ArrayList<Integer> sol) {
 		boolean contradiction = false;
@@ -362,6 +364,7 @@ public class Debat {
 			System.out.println(sb2);
 			System.out.println(sb);
 		} else if (sol.size() > 1) {
+			StringBuffer sb3 = new StringBuffer();
 			ArrayList<Integer>temp = new ArrayList<>();
 			contradiction = false;
 			for (int i = 0; i < sol.size() && contradiction == false; i++) {
@@ -375,37 +378,34 @@ public class Debat {
 							return contradiction;
 						} else {
 							contradiction = true;
-							StringBuffer sb = new StringBuffer(getNameFromId(j) + " contredit " + getNameFromId(sol.get(i)) + " et " + getNameFromId(sol.get(i)) + " ne se défend pas.");
+							sb3.replace(0,sb3.length(),getNameFromId(j) + " contredit " + getNameFromId(sol.get(i)) + " et " + getNameFromId(sol.get(i)) + " ne se défend pas.");
 							temp.add(j) ;
 							for (int k = 0; k < sol.size(); k++){
 								// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence j
 								if (g.getMatriceAdjacence()[sol.get(k)][j] == 1 ) {
 									contradiction = false;
-									sb.replace(0, sb.length(), "");
 								}
 							}
 
-							System.out.println(sb);
 						}
 					}
 				}
 			}
-			System.out.println(temp);
 
 			for (Integer e : temp){
 				contradiction = true;
 
-				System.out.println(e);
 				if (estContredit(e,sol)!=-1){
-					System.out.println("dans le if");
 					contradiction= false ;
-					System.out.println(estContredit(e,sol));
 				}
 				else{
+					System.out.println(sb3);
+					System.out.println("Votre solution n'est pas admissible");
 					return true;
 				}
 
 			}
+
 			if (contradiction == false)
 				System.out.println("Votre solution est admissible ! ");
 			else
@@ -419,8 +419,8 @@ public class Debat {
 	/**
 	 * Permet aussi de verifier l'admissibilité mais sans les affichages en sortie standard
 	 *
-	 * @param sol
-	 * @return
+	 * @param sol solution potentiellement admissible
+	 * @return true si la solution n'est pas admissible, false sinon.
 	 */
 	public boolean estPasAdmissible2(ArrayList<Integer> sol) {
 		boolean contradiction = false;
@@ -448,9 +448,9 @@ public class Debat {
 							return contradiction;
 						} else {
 							contradiction = true;
+							// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence j
 							temp.add(j) ;
 							for (int k = 0; k < sol.size(); k++){
-								// Cas ou l'argument se défend contre celui qui l'a contredit en l'occurence j
 								if (g.getMatriceAdjacence()[sol.get(k)][j] == 1 ) {
 									contradiction = false;
 								}

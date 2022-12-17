@@ -1,26 +1,19 @@
 package up.sm.debat;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
  * Classe qui implémente les interfaces homme-machine
  */
-public class Interface {
+public class InterfaceHM {
 
 	private Debat d ;
 
 	/**
 	 * Constructeur pour la saisie manuelle de la phase 1
 	 */
-	public Interface () {
+	public InterfaceHM () {
 		d = new Debat();
 	}
 
@@ -28,7 +21,7 @@ public class Interface {
 	 * Constructeur pour la saisie par fichier de la phase 2
 	 * @param s
 	 */
-	public Interface (String s) {
+	public InterfaceHM (String s) {
 		d = new Debat(s);
 	}
 
@@ -112,9 +105,7 @@ public class Interface {
 						d.affichersolution();
 						break;
 					case 4:
-						for (int i = 1; i <= d.getGraph().getNbSommets(); i++){
-							d.afficheCombinaisons(i);
-						}
+
 						d.verifPref(d.getsolution());
 						d.affichersolution();
 						break ;
@@ -207,14 +198,14 @@ class TestInterface{
 	public static void main(String []args) {
 
 		if (args.length==0) {
-			Interface i = new Interface ();
+			InterfaceHM i = new InterfaceHM ();
 			i.getD().saisirNbArguments();
 			i.getD().saisirArgument();
 			i.menu1();
 			i.menu2();
 		}
 		else {
-			Interface i = new Interface (args[0]);
+			InterfaceHM i = new InterfaceHM (args[0]);
 			if (i.getD().initGraphFile() == 1)
 				i.menu3();
 
