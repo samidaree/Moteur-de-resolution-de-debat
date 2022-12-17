@@ -5,10 +5,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -744,7 +741,7 @@ public class Debat {
 			System.out.println("vous devez d'abord saisir 1) ou 2)");
 			return ;
 		}
-		System.out.println("Saisissez le chemin ") ;
+		System.out.println("Saisissez le chemin sans guillemets ") ;
 		Scanner saisie = new Scanner(System.in);
 		String chemin = saisie.nextLine() ;
 		Path p = Paths.get(chemin);
@@ -753,7 +750,7 @@ public class Debat {
 			bw.write(afficherListeSolution(this.solution));
 			bw.close();
 		}
-		catch (NoSuchFileException e){
+		catch (NoSuchFileException |InvalidPathException e){
 			System.out.println("Chemin invalide");
 		}
 		catch(IOException e){
