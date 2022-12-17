@@ -7,12 +7,12 @@ Dans le cas contraire, un deuxième menu s'affichera si le chemin du fichier sai
 
 Vous pouvez visualiser le graphe simulant le débat dans les 2 menus. Pour cela, il faut installer GraphViz sur votre machine qui génèrera l'image du graphe dans le chemin que vous aurez saisi.  
 
-#Demo de la saisie manuelle
+## Demo de la saisie manuelle
 
 ![Demo de la saisie manuelle](Demos/demoSaisieManuelle.gif)
 
-#Demo de la saisie par fichier 
+## Demo de la saisie par fichier 
 ![Demo de la saisie par fichier](Demos/demoSaisieFichier.gif)
 
-#Demo de la sauvegarder dans un fichier et la visualisation du graphe par image
-![] (Demos/demoImageEtFichierSauvegarde.gif)
+## Demo de la sauvegarder dans un fichier et la visualisation du graphe par image
+![](Demos/demoImageEtFichierSauvegarde.gif)
