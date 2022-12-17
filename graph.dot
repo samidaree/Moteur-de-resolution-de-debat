@@ -1,9 +1,7 @@
 digraph debat {
-A->B;
-B->A;
-B->C;
-C->B;
-C->D;
-D->C;
+A1->A2;
+A2->A3;
+A3->A4;
+A4->A1;
 
 }

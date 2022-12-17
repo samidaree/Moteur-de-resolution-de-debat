@@ -1,5 +1,9 @@
 package up.sm.debat;
 
+/**
+ * Classe qui implémente les arguments et permet de les identifier de facon unique grace à un ID
+ * Facilite la manipulation des arguments en utilisant des entiers plutôt que des chaines de caractères
+ */
 public class Argument {
 	private int id ; 
 	private String nom ; 
