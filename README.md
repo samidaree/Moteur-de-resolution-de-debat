@@ -14,5 +14,5 @@ Vous pouvez visualiser le graphe simulant le débat dans les 2 menus. Pour cela,
 ## Demo de la saisie par fichier 
 ![Demo de la saisie par fichier](Demos/demoSaisieFichier.gif)
 
-## Demo de la sauvegarder dans un fichier et la visualisation du graphe par image
+## Demo de la sauvegarde dans un fichier et la visualisation du graphe par image
 ![](Demos/demoImageEtFichierSauvegarde.gif)
